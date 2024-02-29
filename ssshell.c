@@ -32,6 +32,7 @@ int interactive_mode(char **av, char **env)
 			return (-1);
 		}
 		executioner(command, av, env);
+		free(command);
 		command = NULL;
 	}
 	return (1);
@@ -87,8 +88,9 @@ int file_input_mode(char *filename, char **av, char **env)
 		while ((nread = _getline(&buffer, &n, file_stream)) > 0)
 		{
 			executioner(buffer, av, env);
+			free(buffer);
+			buffer = NULL;
 		}
-		free(buffer);
 	}
 	return (1);
 }
@@ -106,7 +108,7 @@ int file_input_mode(char *filename, char **av, char **env)
 int main(int ac, char **av, char **env)
 {
 	/* Non-interactive Mode */
-	if (!isatty(STDIN_FILENO))
+	if (isatty(STDIN_FILENO))
 	{
 		non_interactive_mode(av, env);
 	}

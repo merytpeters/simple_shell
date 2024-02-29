@@ -14,17 +14,18 @@ char *make_string(char *str, int start, int end)
 {
 	char *new_str = NULL;
 	int len = end - start + 1;
-	int i;
+	int i = 0;
 
 	new_str = malloc(sizeof(char) * len + 1);
-	if (new_str)
+	if (new_str != NULL)
 	{
-		for (i = 0; i < len; i++)
+		while (i < len)
 		{
 			new_str[i] = str[i + start];
+			i++;
 		}
+		new_str[i - 1] = '\0';
 	}
-	new_str[i - 1] = '\0';
 	return (new_str);
 }
 

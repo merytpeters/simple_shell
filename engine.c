@@ -49,7 +49,6 @@ void executioner(char *buffer, char **av, char **env)
 
 	rmv_nwline(buffer);
 	variable_replaced = check_path(buffer);
-	free(buffer);
 	separated = _strtok(variable_replaced, ";");
 	free(variable_replaced);
 	while (separated[i] != NULL)
