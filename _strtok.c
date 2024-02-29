@@ -24,7 +24,7 @@ char *make_string(char *str, int start, int end)
 			new_str[i] = str[i + start];
 			i++;
 		}
-		new_str[i - 1] = '\0';
+		new_str[i] = '\0';
 	}
 	return (new_str);
 }
@@ -91,13 +91,12 @@ void create_and_fill_toks_v(char *str, int start, int end,
 {
 	char *new_token;
 
-	new_token = make_string(str, start, end);
+	new_token = make_string(str, start, end - 1);
 	*toks_v = enlarge_vector(toks_v, toks_count);
 	if (*toks_v != NULL)
-	{
-		(*toks_v)[toks_count - 2] = strdup(new_token);
+		(*toks_v)[toks_count - 2] = (new_token);
+	else
 		free(new_token);
-	}
 }
 
 /**

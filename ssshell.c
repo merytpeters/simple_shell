@@ -4,6 +4,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include "main.h"
+#define BUFFER_SIZE 1024
 
 /**
  * interactive_mode - This mode is activated when the program is called with no
@@ -88,20 +89,17 @@ int file_input_mode(char *filename, char **av, char **env)
 		fprintf(stderr, "Error: Unable to open file\n");
 		return (0);
 	}
-	else if (file_stream != NULL)
+	else
 	{
 		while ((nread = _getline(&buffer, &n, file_stream)) != -1)
 		{
 			executioner(buffer, av, env);
-			free(buffer);
-			buffer = NULL;
 		}
+		free(buffer);
 	}
 	if (ferror(file_stream))
 	{
 		perror("Error reading from file");
-		free(buffer);
-		fclose(file_stream);
 		return (0);
 	}
 	return (1);
