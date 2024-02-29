@@ -47,7 +47,6 @@ void executioner(char *buffer, char **av, char **env)
 	int i = 0;
 	int j = 0;
 
-	rmv_nwline(buffer);
 	variable_replaced = check_path(buffer);
 	separated = _strtok(variable_replaced, ";");
 	free(variable_replaced);
@@ -59,8 +58,6 @@ void executioner(char *buffer, char **av, char **env)
 		{
 			free(args[0]);
 			args[0] = valid_command;
-			printf("%s: ", av[0] + 2);
-			fflush(stdout);
 			run_command(args, env);
 			for (j = 0; args[j] != NULL; j++)
 				free(args[j]);

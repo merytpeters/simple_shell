@@ -32,6 +32,7 @@ int interactive_mode(char **av, char **env)
 		{
 			return (-1);
 		}
+		rmv_nwline(command);
 		executioner(command, av, env);
 		free(command);
 		command = NULL;
@@ -51,16 +52,16 @@ int interactive_mode(char **av, char **env)
 
 int non_interactive_mode(char **av, char **env)
 {
-	char buffer[BUFFER_SIZE];
-	ssize_t terminal_read;
+	ssize_t nread;
+	size_t n = 0;
+	char *buffer = NULL;
 
 
-	terminal_read = read(STDIN_FILENO, buffer, BUFFER_SIZE);
-	while (terminal_read > 0)
+	nread = _getline(&buffer, &n, stdin);
+	if (nread > 0)
 	{
-
 		executioner(buffer, av, env);
-		terminal_read = read(STDIN_FILENO, buffer, BUFFER_SIZE);
+		free(buffer);
 	}
 	return (1);
 
@@ -93,6 +94,7 @@ int file_input_mode(char *filename, char **av, char **env)
 	{
 		while ((nread = _getline(&buffer, &n, file_stream)) != -1)
 		{
+			rmv_nwline(buffer);
 			executioner(buffer, av, env);
 		}
 		free(buffer);
@@ -117,20 +119,26 @@ int file_input_mode(char *filename, char **av, char **env)
 
 int main(int ac, char **av, char **env)
 {
+	int is_terminal;
+
+	is_terminal = isatty(STDIN_FILENO);
 	/* Non-interactive Mode */
-	if (isatty(STDIN_FILENO))
+	if (is_terminal == 0)
 	{
-		interactive_mode(av, env);
-	}
-	else if (ac == 2)
-	{
-		/* File input mode */
-		file_input_mode(av[1], av, env);
+		non_interactive_mode(av, env);
 	}
 	else
 	{
-		/* non interactive mode */
-		non_interactive_mode(av, env);
+		if (ac == 2)
+		{
+			/* File input mode */
+			file_input_mode(av[1], av, env);
+		}
+		else
+		{
+			/* interactive mode */
+			interactive_mode(av, env);
+		}
 	}
 	return (0);
 }
