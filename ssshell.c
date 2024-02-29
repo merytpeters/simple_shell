@@ -83,14 +83,26 @@ int file_input_mode(char *filename, char **av, char **env)
 	char *buffer = NULL;
 
 	file_stream = fopen(filename, "r");
-	if (file_stream != NULL)
+	if (file_stream == NULL)
 	{
-		while ((nread = _getline(&buffer, &n, file_stream)) > 0)
+		fprintf(stderr, "Error: Unable to open file\n");
+		return (0);
+	}
+	else if (file_stream != NULL)
+	{
+		while ((nread = _getline(&buffer, &n, file_stream)) != -1)
 		{
 			executioner(buffer, av, env);
 			free(buffer);
 			buffer = NULL;
 		}
+	}
+	if (ferror(file_stream))
+	{
+		perror("Error reading from file");
+		free(buffer);
+		fclose(file_stream);
+		return (0);
 	}
 	return (1);
 }
@@ -110,7 +122,7 @@ int main(int ac, char **av, char **env)
 	/* Non-interactive Mode */
 	if (isatty(STDIN_FILENO))
 	{
-		non_interactive_mode(av, env);
+		interactive_mode(av, env);
 	}
 	else if (ac == 2)
 	{
@@ -119,8 +131,8 @@ int main(int ac, char **av, char **env)
 	}
 	else
 	{
-		/* interactive mode */
-		interactive_mode(av, env);
+		/* non interactive mode */
+		non_interactive_mode(av, env);
 	}
 	return (0);
 }
