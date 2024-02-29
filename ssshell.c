@@ -58,10 +58,12 @@ int non_interactive_mode(char **av, char **env)
 
 
 	nread = _getline(&buffer, &n, stdin);
-	if (nread > 0)
+	while (nread > 0)
 	{
 		executioner(buffer, av, env);
 		free(buffer);
+		buffer = NULL;
+		nread = _getline(&buffer, &n, stdin);
 	}
 	return (1);
 
