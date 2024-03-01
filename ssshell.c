@@ -20,11 +20,12 @@ int interactive_mode(char **av, char **env)
 {
 	int keep_running = 1;
 	char *command = NULL;
-	size_t n;
+	size_t n = 0;
 	ssize_t nread;
 
 	while (keep_running == 1)
 	{
+		command = NULL;
 		printf("($) ");
 		fflush(stdout);
 		nread = _getline(&command, &n, stdin);
@@ -35,7 +36,6 @@ int interactive_mode(char **av, char **env)
 		rmv_nwline(command);
 		executioner(command, av, env);
 		free(command);
-		command = NULL;
 	}
 	return (1);
 }

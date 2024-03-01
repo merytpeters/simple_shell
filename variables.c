@@ -45,34 +45,22 @@ char *concat(char *str1, char *str2, char *str3)
 
 char *check_path(char *str)
 {
-	int i = 0;
+	unsigned int i = 0;
 	char *substitute;
-	char *first_half;
-	char *next_half;
+	char *first_half = NULL;
+	char *next_half = NULL;
 
 	while (str[i] != '\0')
 	{
 		if (str[i] == '$')
 		{
-			if ((strncmp(str + i + 1, "PATH", 4)) == 0)
+			if ((i + 5 < strlen(str)) && ((strncmp(str + i + 1, "PATH", 4)) == 0))
 			{
 				substitute = getenv("PATH");
-				next_half = make_string(str, i + 5, strlen(str));
-				first_half = make_string(str, 0, i);
-				return (concat(first_half, substitute, next_half));
-			}
-			else if ((strncmp(str + i + 1, "$", 1)) == 0)
-			{
-				substitute = getenv("PATH");
-				next_half = make_string(str, i + 2, strlen(str));
-				first_half = make_string(str, 0, i);
-				return (concat(first_half, substitute, next_half));
-			}
-			else if ((strncmp(str + i + 1, "?", 1)) == 0)
-			{
-				substitute = getenv("PATH");
-				next_half = make_string(str, i + 2, strlen(str));
-				first_half = make_string(str, 0, i);
+				strncpy(next_half, str + i + 5, strlen(str));
+/*				next_half = make_string(str, i + 5, strlen(str));*/
+				strncpy(first_half, str, i);
+/*				first_half = make_string(str, 0, i);*/
 				return (concat(first_half, substitute, next_half));
 			}
 		}

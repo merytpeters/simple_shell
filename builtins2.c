@@ -15,6 +15,6 @@ void env_view(char **args, char **env)
 	for (i = 0; env[i] != NULL; i++)
 	{
 		if (strncmp(env[i], args[1], strlen(args[1])) == 0)
-			printf("%s\n", env[i] + strlen(args[1]) + 1);
+			printf("%s\n", env[i] + strlen(args[1]));
 	}
 }

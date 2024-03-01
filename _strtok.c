@@ -1,151 +1,85 @@
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
+#include "main.h"
 
 /**
- * make_string - A function that dynamically makes a string
- * @str: A string
- * @start: The position of the first char
- * @end: The position of the last char
- * Return: The new malloced string
+ * insert_string - A function to insert string
+ *
+ * @words: words
+ * @word_count: word count
+ * @str: str
+ * @len: len
+ * @start: start
  */
 
-char *make_string(char *str, int start, int end)
+void insert_string(char ***words, size_t *word_count,
+		char *str, size_t *len, size_t *start)
 {
-	char *new_str = NULL;
-	int len = end - start + 1;
-	int i = 0;
+	char **words_temp;
+	size_t j;
 
-	new_str = malloc(sizeof(char) * len + 1);
-	if (new_str != NULL)
+	words_temp = realloc(*words, (*word_count + 1) * sizeof(char *));
+	if (words_temp == NULL)
 	{
-		while (i < len)
-		{
-			new_str[i] = str[i + start];
-			i++;
-		}
-		new_str[i] = '\0';
+		free_vec(*words);
+		return;
 	}
-	return (new_str);
-}
-
-/**
- * enlarge_vector - while making new strings from the _strtok func
- * This function increases the amount of space needed to accomodate
- * all
- *
- * @toks_v: An address of the toks_v array
- * @size: The new size of the array
- * Return: A pointer to the new adjusted memory location
- */
-
-char **enlarge_vector(char ***toks_v, size_t size)
-{
-	char **toks_v_2;
-
-	toks_v_2 = realloc(*toks_v, sizeof(char *) * size);
-	if (toks_v_2 == NULL)
+	*words = words_temp;
+	(*words)[*word_count] = malloc((*len + 1) * sizeof(char));
+	if ((*words)[*word_count] == NULL)
 	{
-		free(*toks_v);
-		return (NULL);
+		for (j = 0; j < *word_count; j++)
+			free((*words)[j]);
+		free(*words);
+		return;
 	}
-	*toks_v = toks_v_2;
-	return (*toks_v);
+	strncpy((*words)[*word_count], &str[*start], *len);
+	(*words)[*word_count][*len] = '\0';
 }
 
 /**
- * is_delim - This function checks if the characters in a paticular position
- * is a defined delimiter
+ * _strtok - A custom tokenizer
  *
- * @str: The original string we're parsing
- * @delim: A delimiter
- * @start_pos: The position to start checking the original string if delim
- * is a delimiter
- * Return: Either 1 or 0 for if the chars is a delimiter or not
- */
-
-int is_delim(char *str, char *delim, int start_pos)
-{
-	unsigned int len_delim = strlen(delim);
-	unsigned int i = 0;
-
-	for (i = 0; i < len_delim; i++)
-		if (str[start_pos + i] != delim[i])
-			return (0);
-	return (1);
-}
-
-/**
- * create_and_fill_toks_v - Create an entry in the toks_v vector
- * and fill it with the appropraite string
- *
- * @str: The string we want to make the token from
- * @start: The start index of the token in str
- * @end: The end index of the token in str
- * @toks_v: The tokens vector
- * @toks_count: The number of entrys in the tokens vector
- */
-
-void create_and_fill_toks_v(char *str, int start, int end,
-		char ***toks_v, size_t toks_count)
-{
-	char *new_token;
-
-	new_token = make_string(str, start, end - 1);
-	*toks_v = enlarge_vector(toks_v, toks_count);
-	if (*toks_v != NULL)
-		(*toks_v)[toks_count - 2] = (new_token);
-	else
-		free(new_token);
-}
-
-/**
- * _strtok - A tokenizer function that splits a string along a delimiter
- * creating an array of strings in the process
- *
- * @str: The string we want to split up
- * @delim: The delimiter along which the string will be split
+ * @str: The string we want to tokenize
+ * @delim: The delimiter by which we split the string
  * Return: An array of strings
  */
 
 char **_strtok(char *str, char *delim)
 {
-	int i, start = 0, started = 0;
-	char **toks_v = NULL;
-	size_t toks_count = 1;
+	char **words = NULL;
+	char **words_temp;
+	size_t word_count = 0;
+	size_t str_length = strlen(str);
+	size_t len;
+	size_t start = 0;
+	size_t i;
 
-	i = 0;
-	while (str[i] != '\0')
+	words = malloc(sizeof(char *));
+	if (words == NULL)
+		return (NULL);
+	for (i = 0; i <= str_length; i++)
 	{
-		if (is_delim(str, delim, i + 1) || str[i + 1] == '\0')
+		if (str[i] == '\0' || strchr(delim, str[i]) != NULL)
 		{
-			if (started)
+			len = i - start;
+			if (len > 0)
 			{
-				create_and_fill_toks_v(str, start, i + 1, &toks_v, ++toks_count);
-				start = 0;
-				started = 0;
+				insert_string(&words, &word_count, str, &len, &start);
+				word_count++;
 			}
-			else
-			{
-				i++;
-				continue;
-			}
+			start = i + 1;
 		}
-		else if (!is_delim(str, delim, i))
-		{
-			if (!started)
-			{
-				start = i;
-				started = 1;
-			}
-			else
-			{
-				i++;
-				continue;
-			}
-		}
-		i++;
 	}
-	toks_v[toks_count - 1] = NULL;
-	return (toks_v);
+	words_temp = realloc(words, (word_count + 1) * sizeof(char *));
+	if (words_temp == NULL)
+	{
+		for (i = 0; i < word_count; i++)
+		{
+			free(words[i]);
+		}
+		free(words);
+		return (NULL);
+	}
+	words = words_temp;
+	words[word_count] = NULL;
+	return (words);
 }

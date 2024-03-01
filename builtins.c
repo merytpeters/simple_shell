@@ -9,12 +9,11 @@
 
 void custom_exit(char **args, char **env)
 {
-	int status;
+	int status = 0;
 	(void)env;
 
-	if (args[1] == NULL)
-		_exit(0);
-	status = atoi(args[1]);
+	if (args[1] != NULL)
+		status = atoi(args[1]);
 	free_vec(args);
 	_exit(status);
 }
