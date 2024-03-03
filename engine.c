@@ -52,6 +52,11 @@ void executioner(char *buffer, char **av, char **env)
 	while (separated[i] != NULL)
 	{
 		args = _strtok(separated[i], " ");
+		if (args[0] == NULL)
+		{
+			free_vec(args);
+			break;
+		}
 		valid_command = validate_command(args[0], env);
 		if (valid_command)
 		{
