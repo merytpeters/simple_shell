@@ -57,13 +57,13 @@ int non_interactive_mode(char **av, char **env)
 	char *buffer = NULL;
 
 
-	nread = _getline(&buffer, &n, stdin);
-	if (nread > 0)
+	while ((nread = _getline(&buffer, &n, stdin)) > 0)
 	{
 		executioner(buffer, av, env);
 		free(buffer);
 		buffer = NULL;
 	}
+	free(buffer);
 	return (1);
 
 }
